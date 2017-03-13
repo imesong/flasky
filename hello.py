@@ -2,24 +2,21 @@
 # -*-encoding:utf-8 -*-
 
 
-from flask import Flask
-from flask import request
+from flask import Flask,render_template
 from flask import make_response
 from flask import redirect
-from flask import abort
 from flask_script import Manager
+from flask_bootstrap import Bootstrap
 
 app = Flask(__name__)
 # flask_script 扩展程序，管理第三方扩展
 manager = Manager(app)
+bootstrip = Bootstrap(app)
 
 #静态根路由
 @app.route('/')
 def index():
-    user_agent = request.headers.get('User-Agent')
-    return '''<h1>hello flask with qiangge,
-    User-Agent is
-    %s </h1>''' %user_agent
+    return render_template('index.html')
 
 # 响应测试
 @app.route("/response")
@@ -40,12 +37,17 @@ def redir():
 def errorhandle():
     return '<h1>this is about error handler </h1>'
 
-# 动态路由
-@app.route('/user/<name>')
+# 动态路由 使用 Jinjia2 接收变量 name
+@app.route('/<name>')
 def user(name):
-    return '<h1>hello , %s,welcom to user flask !</h1>' %name
+    return render_template('user.html', name = name)
 
 
+# Jinjia2 中渲染 集合，验证了集合中内容是无序存储的
+@app.route('/comments')
+def comment():
+    args = {'a','b','c','d','e','f','g'}
+    return  render_template("comments.html",comments = args)
 
 
 if  __name__ == '__main__':
