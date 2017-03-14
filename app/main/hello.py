@@ -2,7 +2,7 @@
 # -*-encoding:utf-8 -*-
 
 
-from flask import Flask, render_template, session, redirect, url_for, make_response, flash
+from flask import Flask, render_template, session, redirect, url_for, flash
 from flask_script import Manager
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
@@ -12,7 +12,7 @@ from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, MigrateCommand
-from flask_mail import Mail, Message
+from flask_mail import Mail
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 print('basedir == ', basedir)
@@ -67,45 +67,6 @@ def index():
                            form=form,
                            name=session.get('name'),
                            known=session.get('known', False))
-
-
-# 响应测试
-@app.route("/response")
-def response():
-    response = make_response('<h1>This document with cookies</h1>')
-    response.set_cookie('name','imesong')
-    response.set_cookie('password','imesong')
-    # 客户端如何获取 cookie 中的数据呢
-    return response
-
-
-#重定向
-@app.route('/redirect')
-def redir():
-    return redirect('http://www.baidu.com')
-
-
-@app.errorhandler(404)
-def page_not_found():
-    return render_template('404.html'), 404
-
-
-@app.errorhandler(500)
-def server_fault():
-    return render_template('500.html'), 500
-
-
-# 动态路由 使用 Jinjia2 接收变量 name
-@app.route('/<name>')
-def user(name):
-    return render_template('user.html', name=name)
-
-
-# Jinjia2 中渲染 集合，验证了集合中内容是无序存储的
-@app.route('/comments')
-def comment():
-    args = {'a', 'b', 'c', 'd', 'e', 'f', 'g'}
-    return render_template("comments.html", comments=args)
 
 
 class NameForm(Form):
