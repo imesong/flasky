@@ -8,10 +8,15 @@ from flask import redirect
 from flask_script import Manager
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
-from datetime import datetime
+
+from flask_wtf import Form
+from wtforms import StringField,SubmitField
+from wtforms.validators import DataRequired
 
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'woshiqiangge'
+
 # flask_script 扩展程序，管理第三方扩展
 manager = Manager(app)
 # UI渲染
@@ -20,10 +25,14 @@ bootstrip = Bootstrap(app)
 moment = Moment(app)
 
 #静态根路由
-@app.route('/')
+@app.route('/',methods=['GET','POST'])
 def index():
-    print(datetime.utcnow())
-    return render_template('index.html',current_time=datetime.utcnow())
+    name = None
+    form = NameForm()
+    if form.validate_on_submit():
+        name = form.name.data
+        form.name.data = ''
+    return render_template('index.html',form=form,name=name)
 
 # 响应测试
 @app.route("/response")
@@ -64,6 +73,12 @@ def comment():
 
 def about():
     return render_template("about.html")
+
+
+class NameForm(Form):
+    name = StringField("what's your name ?",validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
 
 if  __name__ == '__main__':
     # app.run(debug=True)
