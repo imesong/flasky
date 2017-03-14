@@ -33,9 +33,13 @@ def redir():
     return redirect('http://www.baidu.com')
 
 
-@app.route('/404')
-def errorhandle():
-    return '<h1>this is about error handler </h1>'
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html') ,404
+
+@app.errorhandler(500)
+def server_fault(e):
+    return render_template('500.html'),500
 
 # 动态路由 使用 Jinjia2 接收变量 name
 @app.route('/<name>')
@@ -48,6 +52,9 @@ def user(name):
 def comment():
     args = {'a','b','c','d','e','f','g'}
     return  render_template("comments.html",comments = args)
+
+
+
 
 
 if  __name__ == '__main__':
