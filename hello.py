@@ -8,18 +8,28 @@ from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 import os
 from flask_wtf import Form
-from wtforms import StringField,SubmitField
+from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate,MigrateCommand
+from flask_migrate import Migrate, MigrateCommand
+from flask_mail import Mail, Message
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 print('basedir == ', basedir)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'woshiqiangge'
+# 数据库相关
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+os.path.join(basedir,'data.sqlite')
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
+
+#Mail 服务器
+app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get("MAIL_PASSWORD")
+
 
 # flask_script 扩展程序，管理第三方扩展
 manager = Manager(app)
@@ -32,6 +42,8 @@ db = SQLAlchemy(app)
 
 migrate = Migrate(app, db)
 manager.add_command('db', MigrateCommand)
+
+mail = Mail(app)
 
 #静态根路由
 @app.route('/', methods=['GET','POST'])
