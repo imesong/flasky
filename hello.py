@@ -7,16 +7,23 @@ from flask import make_response
 from flask import redirect
 from flask_script import Manager
 from flask_bootstrap import Bootstrap
+from flask_moment import Moment
+from datetime import datetime
+
 
 app = Flask(__name__)
 # flask_script 扩展程序，管理第三方扩展
 manager = Manager(app)
+# UI渲染
 bootstrip = Bootstrap(app)
+# 客户端时间本地化
+moment = Moment(app)
 
 #静态根路由
 @app.route('/')
 def index():
-    return render_template('index.html')
+    print(datetime.utcnow())
+    return render_template('index.html',current_time=datetime.utcnow())
 
 # 响应测试
 @app.route("/response")
