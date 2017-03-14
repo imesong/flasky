@@ -3,6 +3,15 @@
 <!--继承自 bootstrap -->
 {% extends 'bootstrap/base.html' %}
 {% block title %} FlaskSample {% endblock %}
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" href="{{ url_for('static',filename='favicon.icon')}}" type="image/x-icon">
+<link rel="icon" href="{{ url_for('static',filename='favicon.icon') }}" type="image/x-icon">
+
+{% endblock %}
+
+
+
 {% block navbar %}
 
     <div class="navbar navbar-inverse" role="navigation">
@@ -21,6 +30,13 @@
                     <li><a href="/">Home</a></li>
                 </ul>
             </div>
+
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href={{url_for('static',filename='about.html',_extern=True)}}>About</a></li>
+                </ul>
+            </div>
+
         </div>
     </div>
 {% endblock %}
