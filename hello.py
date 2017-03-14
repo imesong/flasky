@@ -2,9 +2,7 @@
 # -*-encoding:utf-8 -*-
 
 
-from flask import Flask,render_template
-from flask import make_response
-from flask import redirect
+from flask import Flask,render_template,session,redirect,url_for,make_response,flash
 from flask_script import Manager
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
@@ -27,12 +25,14 @@ moment = Moment(app)
 #静态根路由
 @app.route('/',methods=['GET','POST'])
 def index():
-    name = None
     form = NameForm()
     if form.validate_on_submit():
-        name = form.name.data
-        form.name.data = ''
-    return render_template('index.html',form=form,name=name)
+        old_name = session.get('name')
+        if old_name is not None and old_name != form.name.data:
+            flash("looks like you have change your name")
+        session['name'] = form.name.data
+        return redirect(url_for('index'))
+    return render_template('index.html',form=form,name=session.get('name'))
 
 # 响应测试
 @app.route("/response")
