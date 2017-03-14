@@ -35,6 +35,9 @@ class TestConfig:
     SQLALCHEMY_DATABASE_URI = os.environ.get("TEST_DATABASE_URI") or \
                               'sqlite:///'+os.path.join(basedir, 'data_test.sqlite')
 
+    @staticmethod
+    def init_app(app):
+        pass
 
 class ProductionConfig:
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URI") or \
