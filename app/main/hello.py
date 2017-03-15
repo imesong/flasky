@@ -23,14 +23,6 @@ app.config['SECRET_KEY'] = 'woshiqiangge'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+os.path.join(basedir,'data.sqlite')
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 
-#Mail 服务器
-app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.environ.get("MAIL_PASSWORD")
-
-
 # flask_script 扩展程序，管理第三方扩展
 manager = Manager(app)
 # UI渲染
