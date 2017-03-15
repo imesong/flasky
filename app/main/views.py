@@ -1,6 +1,7 @@
 from flask import render_template, session, redirect, url_for, current_app
 from .. import db
 from ..models import User
+from ..email import send_email
 from . import main
 from .forms import NameForm
 
@@ -14,15 +15,13 @@ def index():
             user = User(username=form.name.data)
             db.session.add(user)
             session['known'] = False
+            if current_app.config['FLASKY_ADMIN']:
+                send_email(current_app.config['FLASKY_ADMIN'], 'New User',
+                           'mail/new_user', user=user)
         else:
             session['known'] = True
-
-        # old_name = session.get('name')
-        # if old_name is not None and old_name != form.name.data:
-            # flash("looks like you have change your name")
         session['name'] = form.name.data
-        return redirect(url_for('main.index'))
+        return redirect(url_for('.index'))
     return render_template('index.html',
-                           form=form,
-                           name=session.get('name'),
+                           form=form, name=session.get('name'),
                            known=session.get('known', False))
