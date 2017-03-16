@@ -28,7 +28,7 @@ class User(UserMixin, db.Model):
     #生成确认邮件用的token
     def generate_confirmation_token(self, expiration=3600):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
-        return s.dump({'confirm',self.id})
+        return s.dump({'confirm': self.id})
 
     # 生成确认邮件
     def confirm_token(self, token):
