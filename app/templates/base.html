@@ -2,7 +2,7 @@
 <html lang="en">
 <!--继承自 bootstrap -->
 {% extends 'bootstrap/base.html' %}
-{% block title %} FlaskSample {% endblock %}
+{% block title %} Flask {% endblock %}
 {% block head %}
 {{ super() }}
 <link rel="shortcut icon" href="{{ url_for('static',filename='favicon.ico')}}" type="image/x-icon">
@@ -15,8 +15,6 @@
 {{ super() }}
 {{ moment.include_moment() }}
 {% endblock %}
-
-
 
 {% block navbar %}
 
@@ -35,8 +33,16 @@
                 <ul class="nav navbar-nav">
                     <li><a href="/">Home</a></li>
                 </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    {% if current_user.is_authenticated() %}
+                    <li><a href="{{ url_for('auth.logout') }}"> Sign out</a></li>
+                    {% else %}
+                    <li><a href="{{ url_for('auth_login') }}">Sign in</a></li>
+                    {% endif %}
+                </ul>
             </div>
         </div>
+
     </div>
 {% endblock %}
 
