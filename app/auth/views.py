@@ -100,7 +100,6 @@ def change_password():
         return render_template('auth/change_password.html', form=form)
 
 
-
 @auth.route('/reset', methods=['GET', 'POST'])
 def password_reset_request():
     if not current_user.is_anonymous:
