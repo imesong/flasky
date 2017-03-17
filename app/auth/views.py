@@ -1,10 +1,11 @@
-from flask import render_template, redirect, request, url_for, flash
+from flask import render_template, redirect, request, url_for, flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from . import auth
 from ..models import User
 from .forms import LoginForm, RegisterFrom, ChangePasswordForm, PasswordResetForm, PasswordResetRequestForm, ChangeEmailForm
 from .. import db
 from ..email import send_email
+from app.main import main
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -60,11 +61,13 @@ def confirm(token):
 
 @auth.before_request
 def before_request():
-    if current_user.is_authenticated \
-            and not current_user.confirmed \
+    if current_user.is_authenticated:
+        #更新用户的访问时间
+        current_user.ping()
+        if not current_user.confirmed \
             and request.endpoint[:5] != 'auth.' \
             and request.endpoint != 'static':
-        return redirect(url_for('auth.unconfirmed'))
+            return redirect(url_for('auth.unconfirmed'))
 
 
 @auth.route('/unconfirmed')
@@ -161,6 +164,13 @@ def change_email(token):
         flash('Invalid request')
     return redirect(url_for('main.index'))
 
+
+@main.route('/user/<username>')
+def user(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        abort(404)
+    return render_template('user.html', user=user)
 
 
 
