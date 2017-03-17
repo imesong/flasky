@@ -92,12 +92,11 @@ def change_password():
         if current_user.verify_password(form.password.data):
             current_user.password = form.password.data
             db.session.add(current_user)
-            flash('Your password has benn updated')
+            flash('Your password has been updated')
             return redirect(url_for('main.index'))
         else:
             flash('Invalid password.')
-
-        return render_template('auth/change_password.html', form=form)
+    return render_template('auth/change_password.html', form=form)
 
 
 @auth.route('/reset', methods=['GET', 'POST'])

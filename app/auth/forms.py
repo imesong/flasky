@@ -32,9 +32,9 @@ class RegisterFrom(FlaskForm):
 
 
 class ChangePasswordForm(FlaskForm):
-    password = PasswordField("Now password", validators=[DataRequired()])
-    new_password = PasswordField('Old Password', validators=[DataRequired(), EqualTo('new_password2', message='password must match')])
-    new_password2 = PasswordField('New Password', validators=[DataRequired()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    new_password = PasswordField('New Password', validators=[DataRequired(), EqualTo('new_password2', message='password must match')])
+    new_password2 = PasswordField('Confirm Password', validators=[DataRequired()])
     submit = SubmitField("Update confirm")
 
 
