@@ -52,7 +52,7 @@ class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     # 用户是否确认过
-    confirmed = db.Column(db.Boolean,default=False)
+    confirmed = db.Column(db.Boolean, default=False)
     email = db.Column(db.String(64), unique=True, index=True)
     username = db.Column(db.String(64), unique=True, index=True)
     name = db.Column(db.String(64))
@@ -64,7 +64,6 @@ class User(UserMixin, db.Model):
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
     avatar_hash = db.Column(db.String(32))
 
-
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
         if self.role is None:
@@ -73,8 +72,7 @@ class User(UserMixin, db.Model):
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
         if self.email is not None and self.avatar_hash is None:
-            self.avatar_hash = hashlib(self.email.encode('utf-8')).hexdigest()
-
+            self.avatar_hash = hashlib.md5(self.email.encode('utf-8')).hexdigest()
 
     def ping(self):
         self.last_seen = datetime.utcnow()
@@ -97,7 +95,7 @@ class User(UserMixin, db.Model):
     def confirm_token(self, token):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
-            data = s.load(token)
+            data = s.loads(token)
         except:
             return False
         if data.get('confirm') != self.id:
@@ -108,7 +106,7 @@ class User(UserMixin, db.Model):
 
     def generate_reset_token(self, expiration=3600):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
-        return s.dumps({'reset':self.id})
+        return s.dumps({'reset': self.id})
 
     def reset_password(self, token, new_password):
         s = Serializer(current_app.config['SECRET_KEY'])
@@ -136,6 +134,8 @@ class User(UserMixin, db.Model):
             return False
         new_email = data.get('new_email')
         if new_email is None:
+            return False
+        if self.query.filter_by(email=new_email).first() is not None:
             return False
         self.email = new_email
         self.avatar_hash = hashlib.md5(self.email.encode('utf-8')).hexdigest()
