@@ -32,7 +32,7 @@ def edit_profile():
         flash('Your profile has benn update')
         return redirect(url_for('.user', username=current_user.username))
     form.name.date = current_user.name
-    form.location.data = current_user.locaiton
+    form.location.data = current_user.location
     form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', form=form)
 

@@ -1,18 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<!--继承自 bootstrap -->
 {% extends 'bootstrap/base.html' %}
 {% block title %} Flasky {% endblock %}
 {% block head %}
 {{ super() }}
 <link rel="shortcut icon" href="{{ url_for('static',filename='favicon.ico')}}" type="image/x-icon">
 <link rel="icon" href="{{ url_for('static',filename='favicon.ico') }}" type="image/x-icon">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
 {% endblock %}
-<!--引入moment.js scripts 要添加 s结尾，不然 引入不成功-->
-{% block scripts %}
-{{ super() }}
-{{ moment.include_moment() }}
-{% endblock %}
+
 
 {% block navbar %}
 
@@ -38,7 +32,10 @@
                     {% if current_user.is_authenticated %}
 
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <img src="{{ current_user.gravatar(size=18) }}">
+                            Account <b class="caret"></b></a>
+
                         <ul class="dropdown-menu">
                             <li><a href="{{ url_for('auth.change_password')}}">Change Password</a></li>
                             <li><a href="{{ url_for('auth.change_email_request') }}">Change Email</a></li>
@@ -66,9 +63,11 @@
     {% endfor %}
 
     {% block page_content %}{% endblock %}
-
 </div>
 {% endblock %}
 
-
-</html>
+<!--引入moment.js scripts 要添加 s结尾，不然 引入不成功-->
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment() }}
+{% endblock %}
