@@ -42,3 +42,9 @@ class EditProfileAdminForm(FlaskForm):
     def validate_username(self, field):
         if field.data != self.user.username and User.query.filter_by(username=field.data).first():
             raise ValidationError('Username alread in user.')
+
+
+# 发表博客的表单
+class PostForm(FlaskForm):
+    body = TextAreaField("What's in your mind?", validators=[DataRequired()])
+    submit = SubmitField("Submit")

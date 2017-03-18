@@ -28,6 +28,11 @@
             {% endif %}
         </p>
     </div>
-
 </div>
+<div class="container">
+    <h3>Posts by {{ user.username }}</h3>
+    {% include '_post.html' %}
+</div>
+
+
 {% endblock %}
