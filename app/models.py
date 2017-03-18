@@ -212,7 +212,6 @@ class Post(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow())
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     body_html = db.Column(db.Text)
-    author = db.Column(db.String(64))
 
     @staticmethod
     def generate_fake(count=100):
