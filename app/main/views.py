@@ -96,7 +96,7 @@ def post(id):
 
 @main.route('/edit/<int:id>', methods=['POST', 'GET'])
 def edit(id):
-    post = Post.query_get_or_404(id)
+    post = Post.query.get_or_404(id)
     if current_user != post.author and not current_user.can(Permissions.ADMINISTER):
         abort(403)
     form = PostForm()
@@ -104,7 +104,7 @@ def edit(id):
         post.body = form.body.data
         db.session.add(post)
         flash('The post has been updated.')
-        return redirect(url_for('post', id=id))
+        return redirect(url_for('.post', id=id))
     form.body.data = post.body
     return render_template('edit_post.html', form=form)
 
