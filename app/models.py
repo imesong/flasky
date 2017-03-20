@@ -48,6 +48,14 @@ class Permissions:
     MODIFY_COMMENTS = 0x08
     ADMINISTER = 0x80
 
+class Follow(db.Model):
+    __tablename__ = 'follows'
+    follower_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    followed_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -65,7 +73,8 @@ class User(UserMixin, db.Model):
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
     avatar_hash = db.Column(db.String(32))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
-    followed = db.relationship('Follow', foreign_keys=[Follow.follower_id],
+    followed = db.relationship('Follow',
+                               foreign_keys=[Follow.follower_id],
                                backref=db.backref('follower', lazy='joined'),
                                lazy='dynamic',
                                cascade='all, delete-orphan')
@@ -239,13 +248,6 @@ login_manager.anonymous_user = AnonymousUser
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-
-class Follow(db.Model):
-    __tablename__ = 'follows'
-    id = db.Column(db.Integer, primary_key=True)
-    follower_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
-    followed_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 class Post(db.Model):
