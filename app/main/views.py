@@ -149,7 +149,7 @@ def followers(username):
     if user is None:
         flash('Invalid user')
         return redirect(url_for('.index'))
-    page = request.args.get('page', 1, tpye=int)
+    page = request.args.get('page', 1, type=int)
     pagination = user.followers.paginate(
         page, per_page=current_app.config['FLASKY_FOLLOWERS_PER_PAGE'],
         error_out=False)
@@ -168,14 +168,16 @@ def followed_by(username):
     if user is None:
         flash('Invalid user')
         return redirect(url_for('.index'))
-    page = request.args.get('page', '1', type=int)
+    page = request.args.get('page', 1, type=int)
     pagination = user.followed.paginate(
         page, per_page=current_app.config['FLASKY_FOLLOWERS_PER_PAGE'],
         error_out=False)
     follows = [{'user': item.followed, 'timestamp': item.timestamp}
                for item in pagination.items]
-    return render_template('followers.html', user=user, title='Followed by',
-                           endpoint='.followed_by', pagination=pagination,
+    return render_template('followers.html', user=user,
+                           title='Followed by',
+                           endpoint='.followed_by',
+                           pagination=pagination,
                            follows=follows)
 
 @main.route('/all')
