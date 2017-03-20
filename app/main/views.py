@@ -17,10 +17,10 @@ def index():
 
     page = request.args.get('page', 1, type=int)
     show_followed = False
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         show_followed = bool(request.cookies.get('show_followed', ''))
     if show_followed:
-        query = current_user.followed_posts
+        query = current_user.followed_post
     else:
         query = Post.query
     pagination = query.order_by(Post.timestamp.desc()).paginate(
@@ -161,6 +161,22 @@ def followers(username):
                            pagination=pagination,
                            follows=follows)
 
+
+@main.route('/followed-by/<username>')
+def followed_by(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash('Invalid user')
+        return redirect(url_for('.index'))
+    page = request.args.get('page', '1', type=int)
+    pagination = user.followed.paginate(
+        page, per_page=current_app.config['FLASKY_FOLLOWERS_PER_PAGE'],
+        error_out=False)
+    follows = [{'user': item.followed, 'timestamp': item.timestamp}
+               for item in pagination.items]
+    return render_template('followers.html', user=user, title='Followed by',
+                           endpoint='.followed_by', pagination=pagination,
+                           follows=follows)
 
 @main.route('/all')
 @login_required
