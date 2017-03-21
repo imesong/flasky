@@ -45,7 +45,7 @@ class Permissions:
     FOLLOW = 0x01
     COMMENT = 0x02
     WRITE_ARTICLES = 0x04
-    MODIFY_COMMENTS = 0x08
+    MODERATE_COMMENTS = 0x08
     ADMINISTER = 0x80
 
 
@@ -204,7 +204,7 @@ class User(UserMixin, db.Model):
             .format(url=url, hash=hash, size=size, default=default, rating=rating)
 
     @property
-    def followed_post(self):
+    def followed_posts(self):
         # 联表查询 两个等同
         # db.session.query(Post).select_from(Follow).
         # filter_by(follower_id=self.id).
@@ -252,9 +252,9 @@ class Post(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow())
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     body_html = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
 
     @staticmethod
@@ -265,8 +265,8 @@ class Post(db.Model):
         seed()
         user_count = User.query.count()
         for i in range(count):
-            u = User.query.offset(randint(0, user_count-1)).first()
-            p = Post(body=forgery_py.lorem_ipsum.sentences(randint(1, 3)),
+            u = User.query.offset(randint(0, user_count - 1)).first()
+            p = Post(body=forgery_py.lorem_ipsum.sentences(randint(1, 5)),
                      timestamp=forgery_py.date.date(True),
                      author=u)
             db.session.add(p)
@@ -287,16 +287,16 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text)
     body_html = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow())
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     disabled = db.Column(db.Boolean)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
 
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
-        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i',
-                        'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'p']
-        target_body_html = bleach.linkify(bleach.clean(
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'code', 'em', 'i',
+                        'strong']
+        target.body_html = bleach.linkify(bleach.clean(
             markdown(value, output_format='html'),
             tags=allowed_tags, strip=True))
 

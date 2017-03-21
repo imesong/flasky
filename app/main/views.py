@@ -11,16 +11,16 @@ from .. import db
 def index():
     form = PostForm()
     if current_user.can(Permissions.WRITE_ARTICLES) and form.validate_on_submit():
-        post = Post(body=form.body.data, author=current_user._get_current_object())
+        post = Post(body=form.body.data,
+                    author=current_user._get_current_object())
         db.session.add(post)
         return redirect(url_for('.index'))
-
     page = request.args.get('page', 1, type=int)
     show_followed = False
     if current_user.is_authenticated:
         show_followed = bool(request.cookies.get('show_followed', ''))
     if show_followed:
-        query = current_user.followed_post
+        query = current_user.followed_posts
     else:
         query = Post.query
     pagination = query.order_by(Post.timestamp.desc()).paginate(
@@ -62,8 +62,8 @@ def edit_profile():
 
 
 @main.route('/edit-profile/<int:id>', methods=['GET', 'POST'])
-@admin_required
 @login_required
+@admin_required
 def edit_profile_admin(id):
     user = User.query.get_or_404(id)
     form = EditProfileAdminForm(user=user)
@@ -197,6 +197,7 @@ def followed_by(username):
                            pagination=pagination,
                            follows=follows)
 
+
 @main.route('/all')
 @login_required
 def show_all():
@@ -211,3 +212,37 @@ def show_followed():
     resp = make_response(redirect(url_for('.index')))
     resp.set_cookie('show_followed', '1', max_age=30*24*60*60)
     return resp
+
+
+@main.route('/moderate')
+@login_required
+@permission_required(Permissions.MODERATE_COMMENTS)
+def moderate():
+    page = request.args.get('page', 1, tpye=int)
+    pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(
+        page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],
+        error_out=False)
+    comments = pagination.items
+    return render_template('moderate.html', comments=comments,
+                           pagination=pagination,
+                           page=page)
+
+
+@main.route('/moderate/enable/<int:id>')
+@login_required
+@permission_required(Permissions.MODERATE_COMMENTS)
+def moderate_enable(id):
+    comment = Comment.query.get_or_404(id)
+    comment.disabled = False
+    db.session.add(comment)
+    return redirect(url_for('.moderate', page=request.args.get('page', 1, type=int)))
+
+
+@main.route('/moderate/disable/<int:id>')
+@login_required
+@permission_required(Permissions.MODERATE_COMMENTS)
+def moderate_disable(id):
+    comment = Comment.query.get_or_404(id)
+    comment.disabled = True
+    db.session.add(comment)
+    return redirect(url_for('.moderate', page=request.args.get('page', 1, type=int)))

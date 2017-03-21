@@ -6,7 +6,7 @@
         {% else %} #
         {% endif %}">&laquo;</a>
     </li>
-    {%for p in pagination.iter_pages() %}
+    {% for p in pagination.iter_pages() %}
         {% if p %}
             {% if p == pagination.page %}
             <li class="active">
