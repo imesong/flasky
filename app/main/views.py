@@ -218,14 +218,13 @@ def show_followed():
 @login_required
 @permission_required(Permissions.MODERATE_COMMENTS)
 def moderate():
-    page = request.args.get('page', 1, tpye=int)
+    page = request.args.get('page', 1, type=int)
     pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(
         page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],
         error_out=False)
     comments = pagination.items
     return render_template('moderate.html', comments=comments,
-                           pagination=pagination,
-                           page=page)
+                           pagination=pagination, page=page)
 
 
 @main.route('/moderate/enable/<int:id>')
